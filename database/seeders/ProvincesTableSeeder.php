@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Province;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class ProvincesTableSeeder extends Seeder
 {
@@ -12,6 +14,21 @@ class ProvincesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        //Fetch Rest API
+        $response = Http::withHeaders([
+        	//api key rajaongkir
+            'key' => config('rajaongkir.api_key'),
+        ])->get('https://api.rajaongkir.com/starter/province');
+        
+        //loop data from Rest API
+        foreach($response['rajaongkir']['results'] as $province) {
+
+            //insert ke table "provinces"
+            Province::create([
+                'id'    => $province['province_id'],
+                'name'  => $province['province']  
+            ]);
+
+        }
     }
 }
